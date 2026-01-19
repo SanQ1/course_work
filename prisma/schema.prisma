@@ -1,0 +1,87 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+
+model customer{
+  customerid		Int		@id @default(autoincrement())
+  name			String		@db.VarChar(32)
+  surname		String		@db.VarChar(32)
+  phone_number		String		@db.VarChar(32)
+  email			String		@db.VarChar(256)
+  created_at   		DateTime  	@default(now())
+  deleted_at   		DateTime?
+
+  order			order[]
+  review		review[]
+
+  @@index([email])
+}
+
+model order{
+  orderid		Int		@id @default(autoincrement())
+  customerid		Int
+  address		String		@db.VarChar(256)
+  created_at   		DateTime     	@default(now())
+
+  order_item		order_item[]
+
+  customer		customer	@relation(fields: [customerid], references: [customerid], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model order_item{
+  productid	 	Int
+  orderid		Int
+  quantity		Int
+  product		product		@relation(fields: [productid], references: [productid], onDelete: NoAction, onUpdate: NoAction)
+  order			order		@relation(fields: [orderid], references: [orderid], onDelete: NoAction, onUpdate: NoAction)
+  @@id([productid, orderid])
+}
+
+model product{
+  productid		Int		@id @default(autoincrement())
+  name			String		@db.VarChar(32)
+  cost_for_one		Decimal		@db.Decimal(10, 2)
+  desctiption		String
+  quantity		Int
+  order_item		order_item[]
+  category_product	category_product[]
+  review		review[]
+
+  @@index([name])
+}
+
+model category{
+  categoryid		Int		@id @default(autoincrement())
+  name			String		@db.VarChar(32)
+  category_product	category_product[]
+}
+
+model category_product{
+  productid	 	Int
+  categoryid		Int
+  product		product		@relation(fields: [productid], references: [productid], onDelete: NoAction, onUpdate: NoAction)
+  category		category	@relation(fields: [categoryid], references: [categoryid], onDelete: NoAction, onUpdate: NoAction)
+  @@id([productid, categoryid])
+}
+
+model review{
+  customerid		Int
+  productid		Int
+  review		String
+  product		product		@relation(fields: [productid], references: [productid], onDelete: NoAction, onUpdate: NoAction)
+  customer		customer	@relation(fields: [customerid], references: [customerid], onDelete: NoAction, onUpdate: NoAction)
+  @@id([productid, customerid])
+}
+

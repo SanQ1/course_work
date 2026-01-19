@@ -1,0 +1,38 @@
+services:
+  postgres:
+    image: postgres
+    restart: always
+    environment: 
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: 1234 
+      POSTGRES_DB: db 
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    ports:
+      - "5432:5432"
+
+  app:
+    build: .
+    #restart: always
+    #command: npm test
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://user:1234@postgres:5432/db
+      NODE_ENV: development
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+
+
+volumes:
+  postgres_data:
+
