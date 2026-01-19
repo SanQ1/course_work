@@ -16,14 +16,13 @@ class CustomerService {
         throw new Error("Клієнта не знайдено або він уже був видалений");
       }
 
-      const activeOrders = await tx.order.findMany({
+      const orders = await tx.order.findMany({
         where: {
-          customerid: customerId,
-          status: { in: ['pending', 'shipped'] }
+          customerid: customerId
         }
       });
 
-      if (activeOrders.length > 0) {
+      if (orders.length > 0) {
         throw new Error("Неможливо видалити клієнта з активними замовленнями");
       }
 

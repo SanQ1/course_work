@@ -21,11 +21,11 @@ class OrderService {
         const product = await this.productRepo.findById(item.productid, tx);
         
         if (!product) {
-          throw new Error(`Товар ${item.productid} не знайдено`); // Автоматичний ROLLBACK 
+          throw new Error(`Товар ${item.productid} не знайдено`);
         }
         
         if (product.quantity < item.quantity) {
-          throw new Error(`Недостатньо товару "${product.name}" на складі`); // ROLLBACK [cite: 40, 66]
+          throw new Error(`Недостатньо товару "${product.name}" на складі`);
         }
       }
 
@@ -39,37 +39,6 @@ class OrderService {
 
       return await this.orderRepo.findWithItems(order.orderid, tx);
     });
-  }
-
-  async cancelOrder(orderId) {
-    return await prisma.$transaction(async (tx) => {
-      const order = await this.orderRepo.findWithItems(orderId, tx);
-
-      if (!order) {
-        throw new Error("Замовлення не знайдено"); // [cite: 66]
-      }
-
-      if (order.status === 'cancelled') {
-        throw new Error("Замовлення вже було скасовано раніше");
-      }
-
-      if (order.status === 'shipped' || order.status === 'completed') {
-        throw new Error("Неможливо скасувати замовлення, яке вже відправлено або завершено");
-      }
-
-      await this.orderRepo.updateStatus(orderId, 'cancelled', tx);
-
-      for (const item of order.order_item) {
-        await this.productRepo.incrementStock(item.productid, item.quantity, tx);
-      }
-
-      return { message: "Замовлення успішно скасовано, товари повернуто на склад" };
-    });
-  }
-
-
-  async getPendingOrders(customerId) {
-    return await this.orderRepo.findCustomerOrders(customerId, 'pending');
   }
 }
 

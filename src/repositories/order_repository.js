@@ -1,11 +1,10 @@
 const prisma = require('../lib/prisma');
 
 class OrderRepository {
-  async findCustomerOrders(customerId, status = 'pending') {
+  async findCustomerOrders(customerId) {
     return prisma.order.findMany({
       where: {
-        customerid: customerId,
-      status: status 
+        customerid: customerId
       },
       include: {
         customer: true 
@@ -32,13 +31,6 @@ class OrderRepository {
   async findById(orderId, tx) {
     return tx.order.findUnique({
       where: { orderid: orderId }
-    });
-  }
-
-  async updateStatus(orderId, status, tx) {
-    return tx.order.update({
-      where: { orderid: orderId },
-      data: { status }
     });
   }
 }
