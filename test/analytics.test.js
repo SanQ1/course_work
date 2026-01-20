@@ -2,12 +2,14 @@ const prisma = require('../src/lib/prisma');
 
 describe('Analytics & Complex Queries Tests', () => {
 
-  beforeEach(async () => {
-    await prisma.order_item.deleteMany();
-    await prisma.order.deleteMany();
-    await prisma.product.deleteMany();
-    await prisma.customer.deleteMany();
-  });
+    beforeEach(async () => {
+	await prisma.order_item.deleteMany();
+	await prisma.order.deleteMany();
+	await prisma.category_product.deleteMany();
+	await prisma.product.deleteMany();
+	await prisma.category.deleteMany();
+	await prisma.customer.deleteMany();
+    });
 
   afterAll(async () => {
     await prisma.$disconnect();

@@ -14,7 +14,6 @@ class AnalyticsRepository {
         JOIN product p ON cp.productid = p.productid
         JOIN order_item oi ON p.productid = oi.productid
         JOIN "order" o ON oi.orderid = o.orderid
-        WHERE o.status != 'cancelled'
         GROUP BY c.name
       )
       SELECT * FROM CategoryStats

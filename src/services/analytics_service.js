@@ -9,7 +9,7 @@ class AnalyticsService {
     const minRevenueThreshold = 1000;
     const report = await this.analyticsRepo.getCategoryPerformanceReport(minRevenueThreshold);
     
-    if (!report || (report as any[]).length === 0) {
+    if (!report || report.length === 0) {
       throw new Error("Немає даних для звіту за вказаний період");
     }
 
@@ -17,4 +17,4 @@ class AnalyticsService {
   }
 }
 
-module.exports = {AnalyticsRepository};
+module.exports = {AnalyticsService};
